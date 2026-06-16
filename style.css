@@ -1,5 +1,6 @@
 /* ============================================
    TOURING MAPS APP - STYLESHEET (VANILLA CSS)
+   Mobile-Friendly & 3D Animations
    ============================================ */
 
 /* ============================================
@@ -50,6 +51,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -61,6 +63,8 @@ html, body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     font-size: 14px;
     line-height: 1.5;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 button {
@@ -70,6 +74,8 @@ button {
     font-family: inherit;
     outline: none;
     transition: all var(--transition-fast);
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 input, textarea, select {
@@ -77,6 +83,8 @@ input, textarea, select {
     font-size: inherit;
     border: none;
     outline: none;
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 /* ============================================
@@ -179,6 +187,7 @@ input, textarea, select {
     border-radius: 8px;
     color: var(--text-primary);
     transition: all var(--transition-fast);
+    font-size: 16px; /* Prevent zoom on iOS */
 }
 
 .form-group input::placeholder {
@@ -204,6 +213,8 @@ input, textarea, select {
     cursor: pointer;
     transition: all var(--transition-fast);
     box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .btn-login:hover {
@@ -260,14 +271,37 @@ input, textarea, select {
 
 /* ============================================
    5. GEOCODER (SEARCH BAR - FLOATING)
+   MOBILE FRIENDLY
    ============================================ */
 .geocoder-container {
     position: absolute;
     top: var(--spacing-md);
     left: var(--spacing-md);
+    right: var(--spacing-md);
     z-index: var(--z-floating);
-    width: calc(100% - 200px);
+    width: calc(100% - var(--spacing-md) * 2);
     max-width: 350px;
+}
+
+/* Search Status Indicator */
+.search-status {
+    position: absolute;
+    top: 50px;
+    left: var(--spacing-md);
+    padding: 8px 12px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    font-size: 12px;
+    color: var(--secondary-color);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-fast);
+    z-index: var(--z-floating);
+}
+
+.search-status.active {
+    opacity: 1;
 }
 
 /* Override Mapbox Geocoder styles untuk dark mode */
@@ -277,12 +311,15 @@ input, textarea, select {
     border-radius: 8px !important;
     box-shadow: var(--shadow-md) !important;
     backdrop-filter: blur(10px) !important;
+    width: 100% !important;
 }
 
 .geocoder-container .mapboxgl-ctrl-geocoder input {
     background-color: transparent !important;
     color: var(--text-primary) !important;
     font-size: 14px !important;
+    padding: 12px 12px !important;
+    font-size: 16px !important; /* Prevent iOS zoom */
 }
 
 .geocoder-container .mapboxgl-ctrl-geocoder input::placeholder {
@@ -295,21 +332,30 @@ input, textarea, select {
 
 .geocoder-container .mapboxgl-ctrl-geocoder--pin-right button {
     color: var(--text-primary) !important;
+    padding: 10px !important;
 }
 
 .geocoder-container .suggestions {
     background-color: var(--dark-surface) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: 8px !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
 }
 
 .geocoder-container .suggestions .suggestion {
     color: var(--text-primary) !important;
     padding: var(--spacing-md) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    font-size: 13px !important;
 }
 
 .geocoder-container .suggestions .suggestion:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.geocoder-container .suggestions .suggestion:last-child {
+    border-bottom: none !important;
 }
 
 /* ============================================
@@ -320,7 +366,8 @@ input, textarea, select {
     top: 80px;
     left: var(--spacing-md);
     z-index: var(--z-floating);
-    width: 280px;
+    width: calc(100% - var(--spacing-md) * 2);
+    max-width: 280px;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
@@ -385,11 +432,12 @@ input, textarea, select {
 
 /* ============================================
    7. FLOATING ACTION BUTTONS (FAB - RIGHT)
+   MOBILE OPTIMIZED
    ============================================ */
 .fab-container {
     position: absolute;
     right: var(--spacing-md);
-    bottom: 200px;  /* Sesuaikan untuk tidak tertutup bottom sheet */
+    bottom: 200px;
     z-index: var(--z-floating);
     display: flex;
     flex-direction: column;
@@ -408,6 +456,8 @@ input, textarea, select {
     justify-content: center;
     box-shadow: var(--shadow-md);
     transition: all var(--transition-fast);
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .fab-button:hover {
@@ -432,6 +482,10 @@ input, textarea, select {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
 }
 
+.fab-building {
+    background: linear-gradient(135deg, #fa709a, #fee140);
+}
+
 /* ============================================
    8. BOTTOM SHEET (DASHBOARD SWIPE-UP)
    ============================================ */
@@ -440,7 +494,7 @@ input, textarea, select {
     bottom: 0;
     left: 0;
     width: 100%;
-    max-height: 350px;
+    max-height: 50vh;
     background: var(--dark-surface);
     border-top: 1px solid var(--border-color);
     border-radius: 24px 24px 0 0;
@@ -450,6 +504,8 @@ input, textarea, select {
     overflow-x: hidden;
     transition: all var(--transition-normal);
     touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .bottom-sheet-handle {
@@ -478,6 +534,7 @@ input, textarea, select {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-lg);
+    padding-bottom: var(--spacing-xl);
 }
 
 .dashboard-section {
@@ -541,7 +598,70 @@ input, textarea, select {
 }
 
 /* ============================================
-   10. MEMBERS LIST (BOTTOM SHEET)
+   10. FACILITIES LIST (BOTTOM SHEET)
+   ============================================ */
+.facilities-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.facility-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.facility-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+}
+
+.facility-item.placeholder {
+    justify-content: center;
+    opacity: 0.5;
+}
+
+.facility-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.facility-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.facility-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.facility-distance {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   11. MEMBERS LIST (BOTTOM SHEET)
    ============================================ */
 .members-list {
     display: flex;
@@ -608,7 +728,83 @@ input, textarea, select {
 }
 
 /* ============================================
-   11. DIRECTIONS PANEL
+   12. POI PANEL (POINT OF INTEREST)
+   ============================================ */
+.poi-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--dark-surface);
+    border-top: 1px solid var(--border-color);
+    border-radius: 24px 24px 0 0;
+    z-index: var(--z-floating);
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    transform: translateY(100%);
+    transition: transform var(--transition-normal);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.poi-panel.active {
+    transform: translateY(0);
+}
+
+.close-btn {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    width: 32px;
+    height: 32px;
+    font-size: 24px;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+}
+
+#poiContent {
+    margin-top: var(--spacing-lg);
+}
+
+.poi-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-md);
+}
+
+.poi-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.poi-item {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+}
+
+.poi-item-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.poi-item-text {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   13. DIRECTIONS PANEL
    ============================================ */
 .directions-panel {
     position: absolute;
@@ -633,7 +829,7 @@ input, textarea, select {
 }
 
 /* ============================================
-   12. LOADING SPINNER
+   14. LOADING SPINNER
    ============================================ */
 .loading-spinner {
     position: fixed;
@@ -679,12 +875,64 @@ input, textarea, select {
 }
 
 /* ============================================
-   13. RESPONSIVE DESIGN (MOBILE)
+   15. 3D ANIMATIONS & EFFECTS
    ============================================ */
-@media (max-width: 768px) {
+
+/* Pulse animation untuk hospital */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+}
+
+/* Float animation untuk airplane */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+}
+
+/* Bounce animation untuk fasilitas */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Glow effect untuk fasilitas terdekat */
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 107, 107, 0.6);
+    }
+}
+
+.facility-item.nearby {
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* ============================================
+   16. RESPONSIVE DESIGN (MOBILE FIRST)
+   ============================================ */
+
+/* Small screens (max-width: 480px) */
+@media (max-width: 480px) {
     /* Adjust geocoder width on mobile */
     .geocoder-container {
-        width: calc(100% - 80px);
+        width: 100%;
         max-width: none;
     }
     
@@ -692,48 +940,114 @@ input, textarea, select {
     .fab-container {
         right: var(--spacing-sm);
         bottom: 180px;
+        gap: 6px;
     }
     
     /* Adjust FAB size on mobile */
     .fab-button {
         width: 48px;
         height: 48px;
-        font-size: 18px;
+        font-size: 16px;
     }
     
     /* Adjust SPBU HUD for mobile */
     .spbu-hud-card {
-        width: calc(100% - 40px);
-        max-width: 280px;
+        width: 100%;
+        max-width: none;
         top: 80px;
-        left: var(--spacing-md);
+        left: var(--spacing-sm);
+        right: var(--spacing-sm);
+        padding: var(--spacing-sm);
+    }
+    
+    .spbu-hud-header {
+        font-size: 11px;
+    }
+    
+    .spbu-name {
+        font-size: 12px;
     }
     
     /* Bottom sheet on mobile */
     .bottom-sheet {
-        max-height: 40vh;
+        max-height: 55vh;
     }
     
     /* Login container on mobile */
     .login-container {
         width: 95%;
         padding: var(--spacing-md);
+        margin: auto 20px;
+    }
+    
+    .login-header h1 {
+        font-size: 24px;
+    }
+    
+    .form-group input {
+        font-size: 16px;
     }
 }
 
+/* Medium screens (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .geocoder-container {
+        width: calc(100% - 100px);
+        max-width: 320px;
+    }
+    
+    .fab-container {
+        right: var(--spacing-md);
+        bottom: 200px;
+    }
+    
+    .bottom-sheet {
+        max-height: 45vh;
+    }
+}
+
+/* Landscape mode */
 @media (max-height: 600px) {
-    /* Adjust for landscape mode */
     .fab-container {
         bottom: 100px;
+        gap: 4px;
+    }
+    
+    .fab-button {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
     }
     
     .bottom-sheet {
         max-height: 200px;
     }
+    
+    .spbu-hud-card {
+        top: 60px;
+    }
+}
+
+/* Large screens (desktop) */
+@media (min-width: 769px) {
+    .geocoder-container {
+        width: calc(100% - 200px);
+        max-width: 400px;
+    }
+    
+    .fab-button {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+    
+    .bottom-sheet {
+        max-height: 350px;
+    }
 }
 
 /* ============================================
-   14. UTILITY CLASSES
+   17. UTILITY CLASSES
    ============================================ */
 .hidden {
     display: none !important;
@@ -760,7 +1074,7 @@ input, textarea, select {
 }
 
 /* ============================================
-   15. SCROLLBAR STYLING (WEBKIT)
+   18. SCROLLBAR STYLING (WEBKIT)
    ============================================ */
 ::-webkit-scrollbar {
     width: 6px;
@@ -779,4 +1093,21 @@ input, textarea, select {
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
+}
+
+/* ============================================
+   19. iOS SPECIFIC FIXES
+   ============================================ */
+@supports (-webkit-touch-callout: none) {
+    html {
+        font-size: 16px;
+    }
+    
+    input, textarea, select {
+        font-size: 16px;
+    }
+    
+    .login-container {
+        max-width: 90vw;
+    }
 }
