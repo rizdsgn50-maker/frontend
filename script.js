@@ -8,7 +8,7 @@
    ============================================ */
 
 // Mapbox Access Token - GANTI DENGAN TOKEN ANDA
-const MAPBOX_TOKEN = 'pk.eyJhIjoicmlzZHNnbjUwIiwiYSI6ImNtMjR6bnZkaTAycjAycHBkajkyZXdhMmoifQ.dY_Z0a7mJFnc4vWVkw4wQQ';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoibGxvcmVuemlvNTY3IiwiYSI6ImNtcWdrcHI3MTAxYXMyenBrbmp2MWYxeXEifQ.rU1ozbOtrDFdTw37NYI0Ww';
 
 // Kode akses grup default untuk testing
 const DEFAULT_GROUP_CODES = ['TOURING123', 'MENDAKI456'];
