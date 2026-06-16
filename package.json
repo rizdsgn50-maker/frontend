@@ -1,0 +1,12 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend application",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo \"Build script placeholder\"",
+    "test": "echo \"Test script placeholder\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
