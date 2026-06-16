@@ -1,0 +1,782 @@
+/* ============================================
+   TOURING MAPS APP - STYLESHEET (VANILLA CSS)
+   ============================================ */
+
+/* ============================================
+   1. ROOT & GLOBAL VARIABLES
+   ============================================ */
+:root {
+    /* Color Palette */
+    --primary-color: #ff6b6b;           /* Merah untuk accent */
+    --secondary-color: #4ecdc4;         /* Teal untuk secondary */
+    --dark-bg: #1a1a1a;                 /* Latar belakang gelap */
+    --dark-surface: #2d2d2d;             /* Surface untuk cards */
+    --text-primary: #ffffff;             /* Text putih */
+    --text-secondary: #a0a0a0;          /* Text abu */
+    --border-color: #404040;             /* Border gelap */
+    
+    /* Glassmorphism */
+    --glass-bg: rgba(45, 45, 45, 0.7);  /* Background transparan */
+    --glass-border: rgba(255, 255, 255, 0.1); /* Border glass */
+    
+    /* Shadows & Effects */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 300ms ease-in-out;
+    --transition-slow: 500ms ease-in-out;
+    
+    /* Z-Index Stack */
+    --z-map: 1;
+    --z-overlay: 10;
+    --z-floating: 100;
+    --z-modal: 1000;
+}
+
+/* ============================================
+   2. RESET & BASE STYLES
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--dark-bg);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    outline: none;
+}
+
+/* ============================================
+   3. LOGIN MODAL (OVERLAY)
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(45, 45, 45, 0.95) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-modal);
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    transition: opacity var(--transition-normal), visibility var(--transition-normal);
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Login Container Card */
+.login-container {
+    width: 90%;
+    max-width: 400px;
+    background: var(--dark-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(20px);
+    animation: slideUp var(--transition-slow) ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.login-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.login-header p {
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Form Styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input {
+    padding: var(--spacing-md) var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    transition: all var(--transition-fast);
+}
+
+.form-group input::placeholder {
+    color: var(--text-secondary);
+}
+
+.form-group input:focus {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.2);
+}
+
+/* Button Login */
+.btn-login {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #ff6b6b, #ff5252);
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+/* Login Info */
+.login-info {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* ============================================
+   4. MAP CONTAINER
+   ============================================ */
+.map-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity var(--transition-normal);
+}
+
+.map-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Map Canvas */
+.map-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--z-map);
+}
+
+/* Override Mapbox GL default styles */
+.mapboxgl-canvas {
+    outline: none;
+}
+
+.mapboxgl-canvas-container {
+    background-color: var(--dark-bg) !important;
+}
+
+/* ============================================
+   5. GEOCODER (SEARCH BAR - FLOATING)
+   ============================================ */
+.geocoder-container {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    z-index: var(--z-floating);
+    width: calc(100% - 200px);
+    max-width: 350px;
+}
+
+/* Override Mapbox Geocoder styles untuk dark mode */
+.geocoder-container .mapboxgl-ctrl-geocoder {
+    background-color: var(--dark-surface) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 8px !important;
+    box-shadow: var(--shadow-md) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.geocoder-container .mapboxgl-ctrl-geocoder input {
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+    font-size: 14px !important;
+}
+
+.geocoder-container .mapboxgl-ctrl-geocoder input::placeholder {
+    color: var(--text-secondary) !important;
+}
+
+.geocoder-container .mapboxgl-ctrl-geocoder--icon {
+    filter: invert(1) !important;
+}
+
+.geocoder-container .mapboxgl-ctrl-geocoder--pin-right button {
+    color: var(--text-primary) !important;
+}
+
+.geocoder-container .suggestions {
+    background-color: var(--dark-surface) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 8px !important;
+}
+
+.geocoder-container .suggestions .suggestion {
+    color: var(--text-primary) !important;
+    padding: var(--spacing-md) !important;
+}
+
+.geocoder-container .suggestions .suggestion:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ============================================
+   6. SPBU HUD CARD (FLOATING - TOP LEFT)
+   ============================================ */
+.spbu-hud-card {
+    position: absolute;
+    top: 80px;
+    left: var(--spacing-md);
+    z-index: var(--z-floating);
+    width: 280px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(20px);
+    animation: fadeIn var(--transition-normal) ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.spbu-hud-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--secondary-color);
+}
+
+.spbu-hud-header i {
+    font-size: 16px;
+}
+
+.spbu-hud-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.spbu-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.spbu-distance {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.spbu-status {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   7. FLOATING ACTION BUTTONS (FAB - RIGHT)
+   ============================================ */
+.fab-container {
+    position: absolute;
+    right: var(--spacing-md);
+    bottom: 200px;  /* Sesuaikan untuk tidak tertutup bottom sheet */
+    z-index: var(--z-floating);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.fab-button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-fast);
+}
+
+.fab-button:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.fab-button:active {
+    transform: scale(0.95);
+}
+
+/* Warna spesifik untuk setiap FAB button */
+.fab-compass {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.fab-layer {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.fab-locate {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+/* ============================================
+   8. BOTTOM SHEET (DASHBOARD SWIPE-UP)
+   ============================================ */
+.bottom-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 350px;
+    background: var(--dark-surface);
+    border-top: 1px solid var(--border-color);
+    border-radius: 24px 24px 0 0;
+    z-index: var(--z-floating);
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: all var(--transition-normal);
+    touch-action: none;
+}
+
+.bottom-sheet-handle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
+    cursor: grab;
+}
+
+.bottom-sheet-handle:active {
+    cursor: grabbing;
+}
+
+.handle-bar {
+    width: 40px;
+    height: 4px;
+    background: var(--text-secondary);
+    border-radius: 2px;
+    opacity: 0.3;
+}
+
+/* Bottom Sheet Content */
+.bottom-sheet-content {
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.dashboard-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.dashboard-section h3 {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   9. SPEEDOMETER (BOTTOM SHEET)
+   ============================================ */
+.speedometer {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.speed-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+}
+
+.speed-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.speed-unit {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.speed-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.speed-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+    border-radius: 4px;
+    width: 0%;
+    transition: width 0.1s linear;
+}
+
+/* ============================================
+   10. MEMBERS LIST (BOTTOM SHEET)
+   ============================================ */
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+}
+
+.member-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-color);
+}
+
+.member-item.placeholder {
+    justify-content: center;
+    opacity: 0.5;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.member-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.member-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.member-status {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.member-status.online {
+    color: var(--secondary-color);
+}
+
+/* ============================================
+   11. DIRECTIONS PANEL
+   ============================================ */
+.directions-panel {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    max-width: 350px;
+    max-height: 400px;
+    background: var(--dark-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(10px);
+    z-index: var(--z-floating);
+    overflow-y: auto;
+}
+
+/* Override Mapbox Directions Panel */
+.directions-panel .mapboxgl-ctrl-directions {
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* ============================================
+   12. LOADING SPINNER
+   ============================================ */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--dark-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 1;
+    transition: opacity var(--transition-slow), visibility var(--transition-slow);
+}
+
+.loading-spinner.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: var(--spacing-md);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* ============================================
+   13. RESPONSIVE DESIGN (MOBILE)
+   ============================================ */
+@media (max-width: 768px) {
+    /* Adjust geocoder width on mobile */
+    .geocoder-container {
+        width: calc(100% - 80px);
+        max-width: none;
+    }
+    
+    /* Move FAB container for mobile */
+    .fab-container {
+        right: var(--spacing-sm);
+        bottom: 180px;
+    }
+    
+    /* Adjust FAB size on mobile */
+    .fab-button {
+        width: 48px;
+        height: 48px;
+        font-size: 18px;
+    }
+    
+    /* Adjust SPBU HUD for mobile */
+    .spbu-hud-card {
+        width: calc(100% - 40px);
+        max-width: 280px;
+        top: 80px;
+        left: var(--spacing-md);
+    }
+    
+    /* Bottom sheet on mobile */
+    .bottom-sheet {
+        max-height: 40vh;
+    }
+    
+    /* Login container on mobile */
+    .login-container {
+        width: 95%;
+        padding: var(--spacing-md);
+    }
+}
+
+@media (max-height: 600px) {
+    /* Adjust for landscape mode */
+    .fab-container {
+        bottom: 100px;
+    }
+    
+    .bottom-sheet {
+        max-height: 200px;
+    }
+}
+
+/* ============================================
+   14. UTILITY CLASSES
+   ============================================ */
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}
+
+.transition-fast {
+    transition: all var(--transition-fast);
+}
+
+.transition-normal {
+    transition: all var(--transition-normal);
+}
+
+/* ============================================
+   15. SCROLLBAR STYLING (WEBKIT)
+   ============================================ */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}

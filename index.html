@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aplikasi Peta Hybrid untuk Komunitas Touring/Mendaki Privat (Invite-Only)">
+    <title>Maps Touring Circle - Hybrid Navigation</title>
+    
+    <!-- Mapbox GL JS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+    
+    <!-- Mapbox GL Geocoder Plugin -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" />
+    
+    <!-- Mapbox GL Directions Plugin -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.0/mapbox-gl-directions.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.3.0/mapbox-gl-directions.css" />
+    
+    <!-- Socket.io Client (untuk Real-Time Share Location) -->
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ============================================
+         LAYER 1: LOGIN MODAL (KODE AKSES PRIVAT)
+         ============================================ -->
+    <div id="loginModal" class="modal-overlay active">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🏔️ Touring Circle</h1>
+                <p>Aplikasi Peta Privat untuk Komunitas</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="groupCode">Kode Akses Grup</label>
+                    <input 
+                        type="password" 
+                        id="groupCode" 
+                        placeholder="Masukkan kode akses grup Anda" 
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="userName">Nama Anda</label>
+                    <input 
+                        type="text" 
+                        id="userName" 
+                        placeholder="Masukkan nama pengguna" 
+                        required
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <button type="submit" class="btn-login">Masuk ke Aplikasi</button>
+            </form>
+            
+            <div class="login-info">
+                <small>💡 Masukkan kode akses yang telah diberikan oleh admin grup Anda</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         LAYER 2: MAIN MAP CONTAINER
+         ============================================ -->
+    <div id="mapContainer" class="map-container hidden">
+        <!-- Map Canvas Mapbox -->
+        <div id="map" class="map-canvas"></div>
+        
+        <!-- ============================================
+             TOP LEFT: SEARCH BAR (FLOATING)
+             ============================================ -->
+        <div id="geocoder" class="geocoder-container"></div>
+        
+        <!-- ============================================
+             TOP LEFT: HUD SPBU OTOMATIS (FLOATING CARD)
+             ============================================ -->
+        <div class="spbu-hud-card">
+            <div class="spbu-hud-header">
+                <i class="fas fa-gas-pump"></i>
+                <span>SPBU Terdekat</span>
+            </div>
+            <div class="spbu-hud-content">
+                <div class="spbu-name" id="spbuName">Mencari SPBU...</div>
+                <div class="spbu-distance" id="spbuDistance">-- km</div>
+                <div class="spbu-status" id="spbuStatus">Mengakses GPS...</div>
+            </div>
+        </div>
+        
+        <!-- ============================================
+             RIGHT SIDE: FLOATING ACTION BUTTONS (FAB)
+             ============================================ -->
+        <div class="fab-container">
+            <!-- Tombol Kompas (Reset Orientasi) -->
+            <button id="compassBtn" class="fab-button fab-compass" title="Reset Kompas">
+                <i class="fas fa-compass"></i>
+            </button>
+            
+            <!-- Tombol Layer Switcher (3D City / 3D Terrain) -->
+            <button id="layerBtn" class="fab-button fab-layer" title="Ganti Gaya Peta">
+                <i class="fas fa-layer-group"></i>
+            </button>
+            
+            <!-- Tombol Lokasi Saya (Find Me / Re-center) -->
+            <button id="locateBtn" class="fab-button fab-locate" title="Lokasi Saya">
+                <i class="fas fa-location-dot"></i>
+            </button>
+        </div>
+        
+        <!-- ============================================
+             BOTTOM SHEET: DASHBOARD SWIPE-UP
+             ============================================ -->
+        <div id="bottomSheet" class="bottom-sheet">
+            <!-- Handle untuk swipe drag -->
+            <div class="bottom-sheet-handle">
+                <div class="handle-bar"></div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="bottom-sheet-content">
+                <!-- Speedometer Section -->
+                <div class="dashboard-section speedometer-section">
+                    <h3>Kecepatan Anda</h3>
+                    <div class="speedometer">
+                        <div class="speed-display">
+                            <span id="speedValue" class="speed-number">0</span>
+                            <span class="speed-unit">km/h</span>
+                        </div>
+                        <div class="speed-bar">
+                            <div id="speedBar" class="speed-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Circle Members Section -->
+                <div class="dashboard-section members-section">
+                    <h3>Anggota Circle Aktif</h3>
+                    <div id="membersList" class="members-list">
+                        <div class="member-item placeholder">
+                            <div class="member-avatar">👥</div>
+                            <div class="member-info">
+                                <div class="member-name">Menunggu anggota lain...</div>
+                                <div class="member-status">Offline</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Directions Panel (akan ditampilkan saat navigasi aktif) -->
+        <div id="directionsPanel" class="directions-panel"></div>
+    </div>
+
+    <!-- ============================================
+         CUSTOM MARKERS & ANIMATIONS (HIDDEN CONTAINER)
+         ============================================ -->
+    <div id="markerContainer" style="display: none;"></div>
+    
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Memuat peta...</p>
+    </div>
+
+    <!-- Script utama aplikasi -->
+    <script src="script.js"></script>
+</body>
+</html>
