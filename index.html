@@ -2,8 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="Aplikasi Peta Hybrid untuk Komunitas Touring/Mendaki Privat (Invite-Only)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Maps Touring Circle - Hybrid Navigation</title>
     
     <!-- Mapbox GL JS -->
@@ -65,7 +67,7 @@
             </form>
             
             <div class="login-info">
-                <small>💡 Masukkan kode akses yang telah diberikan oleh admin grup Anda</small>
+                <small>💡 Demo: Kode: TOURING123 | Nama: Anda</small>
             </div>
         </div>
     </div>
@@ -79,8 +81,12 @@
         
         <!-- ============================================
              TOP LEFT: SEARCH BAR (FLOATING)
+             MOBILE FRIENDLY VERSION
              ============================================ -->
         <div id="geocoder" class="geocoder-container"></div>
+        
+        <!-- Search Status Indicator -->
+        <div id="searchStatus" class="search-status"></div>
         
         <!-- ============================================
              TOP LEFT: HUD SPBU OTOMATIS (FLOATING CARD)
@@ -99,6 +105,7 @@
         
         <!-- ============================================
              RIGHT SIDE: FLOATING ACTION BUTTONS (FAB)
+             MOBILE OPTIMIZED
              ============================================ -->
         <div class="fab-container">
             <!-- Tombol Kompas (Reset Orientasi) -->
@@ -115,6 +122,11 @@
             <button id="locateBtn" class="fab-button fab-locate" title="Lokasi Saya">
                 <i class="fas fa-location-dot"></i>
             </button>
+
+            <!-- Tombol Toggle 3D Buildings -->
+            <button id="buildingBtn" class="fab-button fab-building" title="Toggle 3D Bangunan">
+                <i class="fas fa-cube"></i>
+            </button>
         </div>
         
         <!-- ============================================
@@ -130,7 +142,7 @@
             <div class="bottom-sheet-content">
                 <!-- Speedometer Section -->
                 <div class="dashboard-section speedometer-section">
-                    <h3>Kecepatan Anda</h3>
+                    <h3>🚴 Kecepatan Anda</h3>
                     <div class="speedometer">
                         <div class="speed-display">
                             <span id="speedValue" class="speed-number">0</span>
@@ -142,9 +154,23 @@
                     </div>
                 </div>
                 
+                <!-- Facilities Nearby Section -->
+                <div class="dashboard-section facilities-section">
+                    <h3>🏥 Fasilitas Terdekat</h3>
+                    <div id="facilitiesList" class="facilities-list">
+                        <div class="facility-item placeholder">
+                            <div class="facility-icon">🏢</div>
+                            <div class="facility-info">
+                                <div class="facility-name">Memindai fasilitas...</div>
+                                <div class="facility-distance">-- km</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Circle Members Section -->
                 <div class="dashboard-section members-section">
-                    <h3>Anggota Circle Aktif</h3>
+                    <h3>👥 Anggota Circle Aktif</h3>
                     <div id="membersList" class="members-list">
                         <div class="member-item placeholder">
                             <div class="member-avatar">👥</div>
@@ -160,6 +186,12 @@
         
         <!-- Directions Panel (akan ditampilkan saat navigasi aktif) -->
         <div id="directionsPanel" class="directions-panel"></div>
+
+        <!-- POI Info Panel (Point of Interest) -->
+        <div id="poiPanel" class="poi-panel">
+            <button id="closePoiBtn" class="close-btn">&times;</button>
+            <div id="poiContent"></div>
+        </div>
     </div>
 
     <!-- ============================================
@@ -170,7 +202,7 @@
     <!-- Loading Spinner -->
     <div id="loadingSpinner" class="loading-spinner">
         <div class="spinner"></div>
-        <p>Memuat peta...</p>
+        <p>Memuat peta dan fasilitas 3D...</p>
     </div>
 
     <!-- Script utama aplikasi -->
